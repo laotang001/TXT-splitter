@@ -105,13 +105,39 @@ class TxtSplitter:
             
             # 提取章节内容
             chapter_content = '\n'.join(lines[start_idx:end_idx])
+            chapter_title = lines[start_idx].strip()
             
-            # 保存章节文件
-            output_file = os.path.join(output_dir, f"{base_name}_{i+1}.txt")
-            with open(output_file, 'wb') as f:
-                f.write(chapter_content.encode(self.encoding, errors='replace'))
-            
-            result_files.append(output_file)
+            # 检查章节内容长度是否超过1万字
+            if len(chapter_content) > 10000:
+                # 计算需要拆分的部分数量
+                parts_count = (len(chapter_content) + 9999) // 10000  # 向上取整
+                
+                # 按照大约相等的长度拆分章节
+                part_size = len(chapter_content) // parts_count
+                
+                for part_idx in range(parts_count):
+                    start_pos = part_idx * part_size
+                    end_pos = min((part_idx + 1) * part_size, len(chapter_content))
+                    part_content = chapter_content[start_pos:end_pos]
+                    
+                    # 使用章节名+数字作为文件名
+                    safe_title = re.sub(r'[\\/*?:"<>|]', '_', chapter_title)  # 移除不允许的文件名字符
+                    output_file = os.path.join(output_dir, f"{safe_title}_{part_idx+1}.txt")
+                    
+                    with open(output_file, 'wb') as f:
+                        f.write(part_content.encode(self.encoding, errors='replace'))
+                    
+                    result_files.append(output_file)
+            else:
+                # 章节内容不超过1万字，直接保存
+                # 使用章节名作为文件名
+                safe_title = re.sub(r'[\\/*?:"<>|]', '_', chapter_title)  # 移除不允许的文件名字符
+                output_file = os.path.join(output_dir, f"{safe_title}.txt")
+                
+                with open(output_file, 'wb') as f:
+                    f.write(chapter_content.encode(self.encoding, errors='replace'))
+                
+                result_files.append(output_file)
         
         return result_files
     
