@@ -22,6 +22,7 @@ class TxtSplitter:
         self.default_split_size = 8000  # 默认按8000字符拆分
         self.encoding = None
         self.output_dir = None  # 输出目录，默认为None表示使用源文件目录
+        self.enable_clean_text = True  # 是否启用文本整理
         
     def detect_encoding(self, file_path):
         """检测文件编码"""
@@ -57,6 +58,74 @@ class TxtSplitter:
             return content
         except Exception as e:
             raise Exception(f"读取文件失败: {str(e)}")
+    
+    def clean_text(self, content):
+        """清理文本内容"""
+        if not content:
+            return content
+            
+        # 按行分割
+        lines = content.split('\n')
+        cleaned_lines = []
+        
+        for line in lines:
+            # 去除行首尾空格
+            line = line.strip()
+            
+            # 跳过空行（可选择保留一些空行用于段落分隔）
+            if not line:
+                # 如果前一行不是空行，则保留这个空行作为段落分隔
+                if cleaned_lines and cleaned_lines[-1]:
+                    cleaned_lines.append('')
+                continue
+            
+            # 合并多个连续空格为一个空格
+            line = re.sub(r'\s+', ' ', line)
+            
+            # 统一标点符号（半角转全角）
+            punctuation_map = {
+                ',': '，',
+                '.': '。',
+                '?': '？',
+                '!': '！',
+                ':': '：',
+                ';': '；',
+                '(': '（',
+                ')': '）',
+                '"': '"',
+                "'": "'",
+                '[': '【',
+                ']': '】'
+            }
+            
+            for half, full in punctuation_map.items():
+                line = line.replace(half, full)
+            
+            # 处理引号配对
+            line = re.sub(r'"([^"]*)"', r'"\1"', line)
+            line = re.sub(r"'([^']*)'", r"'\1'", line)
+            
+            cleaned_lines.append(line)
+        
+        # 去除文档开头和结尾的多余空行
+        while cleaned_lines and not cleaned_lines[0]:
+            cleaned_lines.pop(0)
+        while cleaned_lines and not cleaned_lines[-1]:
+            cleaned_lines.pop()
+        
+        # 合并连续的空行为单个空行
+        final_lines = []
+        prev_empty = False
+        for line in cleaned_lines:
+            if not line:
+                if not prev_empty:
+                    final_lines.append(line)
+                prev_empty = True
+            else:
+                final_lines.append(line)
+                prev_empty = False
+        
+        return '\n'.join(final_lines)
     
     def find_chapters(self, content):
         """识别章节"""
@@ -168,11 +237,15 @@ class TxtSplitter:
         
         return result_files
     
-    def split_file(self, file_path, progress_callback=None):
+    def split_file(self, file_path, progress_callback=None, enable_clean=True):
         """拆分文件"""
         try:
             # 读取文件
             content = self.read_file(file_path)
+            
+            # 如果启用了文本整理功能，则进行整理
+            if enable_clean:
+                content = self.clean_text(content)
             
             # 按章节拆分
             result_files = self.split_by_chapters(content, file_path)
@@ -186,7 +259,7 @@ class TxtSplitterApp:
     def __init__(self, root):
         self.root = root
         self.root.title("TXT文档拆分工具")
-        self.root.geometry("600x500")
+        self.root.geometry("600x700")
         self.root.resizable(True, True)
         
         self.splitter = TxtSplitter()
@@ -246,6 +319,11 @@ class TxtSplitterApp:
         ttk.Label(settings_frame, text="默认拆分字数:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
         self.split_size_var = tk.StringVar(value="8000")
         ttk.Entry(settings_frame, textvariable=self.split_size_var).grid(row=1, column=1, sticky=tk.EW, padx=5, pady=5)
+        
+        # 文本整理选项
+        self.clean_text_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(settings_frame, text="启用文本整理（去除多余空行、统一标点符号等）", 
+                       variable=self.clean_text_var).grid(row=2, column=0, columnspan=2, sticky=tk.W, padx=5, pady=5)
         
         settings_frame.columnconfigure(1, weight=1)
         
@@ -330,6 +408,9 @@ class TxtSplitterApp:
         # 设置输出目录
         self.splitter.output_dir = self.output_dir
         
+        # 获取文本整理选项状态
+        enable_clean = self.clean_text_var.get()
+        
         # 如果选择了输出目录，确保目录存在
         if self.output_dir and not os.path.exists(self.output_dir):
             try:
@@ -355,7 +436,7 @@ class TxtSplitterApp:
                 self.root.update_idletasks()
                 
                 # 拆分文件
-                result_files = self.splitter.split_file(file_path)
+                result_files = self.splitter.split_file(file_path, enable_clean=self.clean_text_var.get())
                 result_files_count += len(result_files)
                 
                 # 更新进度
