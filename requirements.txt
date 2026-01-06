@@ -1,1 +1,7 @@
 chardet>=4.0.0
+# tkinter is included in Python standard library
+# pathlib is included in Python standard library
+# json is included in Python standard library
+# threading is included in Python standard library
+# re is included in Python standard library
+# os is included in Python standard library
