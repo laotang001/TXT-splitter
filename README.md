@@ -1,89 +1,77 @@
-# AI书籍处理工具 - TXT文档拆分器
+# AI Book Processing Tool - TXT Document Splitter
 
-一款专业的TXT文档拆分软件，专为AI书籍处理和本地知识库创建而设计。支持智能章节识别、多编码兼容和批量处理功能。
+[中文版本](README_CN.md)
 
-## 功能特点
+A professional TXT document splitting software designed for AI book processing and local knowledge base creation. Supports intelligent chapter recognition, multi-encoding compatibility, and batch processing capabilities.
 
-1. **智能章节识别**
-   - 自动识别常见章节标记格式（第X章、第X回、第X节、XXX（一）等）
-   - **新增：支持英文书籍章节识别（Chapter X, Part X, Section X, Book X, Volume X等）**
-   - 支持用户自定义章节标记的正则表达式
+## Key Features
 
-2. **灵活拆分逻辑**
-   - 优先按识别到的章节进行拆分
-   - 当无法识别章节时，按每8000字自动拆分
-   - **新增：当章节内容超过1万字（汉字含标点）时，该章节将自动拆分为多个子文件，并以“章节名_数字”命名。**
-   - 保留原文档的完整内容，不丢失任何文字
+1. **Intelligent Chapter Recognition**
+   - **Enhanced: Automatically identifies common chapter markers in both Chinese and English books**
+   - **Chinese**: Chapter X (第X章), Part X (第X回), Section X (第X节), etc.
+   - **English**: Chapter X, Part X, Section X, Book X, Volume X, etc.
+   - Supports custom regular expressions for chapter identification
 
-3. **多编码支持**
-   - 自动检测并兼容多种中文编码（GBK、UTF-8等）
-   - 确保拆分后的文档保持原编码格式
+2. **Flexible Splitting Logic**
+   - Prioritizes chapter-based splitting when chapters are detected
+   - Automatically splits by 8000 characters when chapters cannot be identified
+   - **New: When chapter content exceeds 10,000 characters (including Chinese characters and punctuation), the chapter is automatically split into multiple sub-files named "ChapterName_Number"**
+   - Preserves complete document content without losing any text
 
-4. **规范化输出**
-   - 每个拆分后的文档以"原文件名_序号.txt"格式保存
-   - 在文件开头保留原章节标题（如按章节拆分）
-   - **新增：支持选择自定义输出目录，拆分后的文件将保存到指定目录。**
-   - **新增：大章节拆分后，文件命名格式为“章节名_数字.txt”。**
+3. **Multi-Encoding Support**
+   - Automatically detects and supports multiple Chinese encodings (GBK, UTF-8, etc.)
+   - Ensures split documents maintain original encoding format
 
-5. **用户友好界面**
-   - 简洁直观的图形用户界面
-   - 处理大文件时显示进度条
-   - 支持批量处理多个TXT文档
+4. **Standardized Output**
+   - Each split document saved as "OriginalFileName_Number.txt" format
+   - Preserves original chapter titles at the beginning of files (when split by chapters)
+   - **New: Supports custom output directory selection - split files are saved to the specified directory**
+   - **New: After large chapter splitting, files are named in "ChapterName_Number.txt" format**
 
-## 安装依赖
+5. **User-Friendly Interface**
+   - Clean and intuitive graphical user interface
+   - Progress bar display when processing large files
+   - Supports batch processing of multiple TXT documents
 
-使用前需要安装 `requirements.txt` 中列出的Python库：
+## Installation Requirements
+
+Install the Python libraries listed in `requirements.txt` before use:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 使用方法
+## Usage Instructions
 
-1. 运行程序：
+1. Run the program:
    ```bash
    python txt_splitter.py
    ```
 
-2. 在界面中点击"选择文件"按钮，选择需要拆分的TXT文件（可多选）
+2. Click the "Select Files" button in the interface to choose TXT files for splitting (multiple selection supported)
 
-3. **新增：点击"选择目录"按钮，选择拆分后文件的输出目录。若不选择，默认输出到源文件所在目录。**
+3. **New: Click the "Select Directory" button to choose the output directory for split files. If not selected, files are saved to the source file directory by default.**
 
-## 适用于AI应用
+## Ideal for AI Applications
 
-本工具专为以下场景设计：
-- **AI书籍处理**：为AI模型训练和分析准备整本书籍
-- **本地知识库创建**：将大型文档拆分为可管理的块，供本地AI系统使用
-- **文档预处理**：为各种AI和机器学习应用优化文本文件
-- **研究和分析**：处理大型文本语料库，用于学术和研究目的
+This tool is specifically designed for:
+- **AI Book Processing**: Prepare entire books for AI model training and analysis
+- **Local Knowledge Base Creation**: Split large documents into manageable chunks for local AI systems
+- **Document Preprocessing**: Optimize text files for various AI and machine learning applications
+- **Research and Analysis**: Process large text corpora for academic and research purposes
 
-## 语言支持
+## Language Support
 
-应用程序支持中英文界面。默认语言为英文，但可以通过语言选择功能切换到中文。
+The application supports both English and Chinese interfaces. The default language is English, but you can switch to Chinese through the language selection feature.
 
-## 技术规格
+## Technical Specifications
 
-- **支持格式**：纯文本文件 (.txt)
-- **编码支持**：UTF-8, GBK, GB2312, GB18030, Big5
-- **章节识别**：可自定义正则表达式
-- **拆分大小**：可配置字符数（默认：8000）
-- **大章节处理**：自动拆分超过10,000个字符的章节
+- **Supported Formats**: Plain text files (.txt)
+- **Encoding Support**: UTF-8, GBK, GB2312, GB18030, Big5
+- **Chapter Recognition**: Customizable regular expressions
+- **Split Size**: Configurable character count (default: 8000)
+- **Large Chapter Handling**: Automatic splitting for chapters exceeding 10,000 characters
 
-## 完美适用于AI知识库开发
+## Perfect for AI Knowledge Base Development
 
-本工具能够高效处理整本书籍和大型文档，非常适合创建全面的本地知识库，供AI系统有效利用。智能拆分机制确保内容在保持上下文连贯性的同时，针对AI处理限制进行优化。
-
-4. 可选：设置自定义章节正则表达式和默认拆分字数
-
-5. 点击"开始拆分"按钮，等待处理完成
-
-6. 拆分后的文件将保存在您选择的输出目录（或源文件目录），命名格式为：
-   - 按章节拆分："章节名.txt"
-   - 大章节拆分："章节名_数字.txt"
-   - 按字数拆分："原文件名_序号.txt"
-
-## 注意事项
-
-- 对于特殊格式的章节标题，可以通过自定义正则表达式进行识别
-- 处理大文件时可能需要较长时间，请耐心等待
-- 如遇到编码识别错误，可尝试先将文件转换为UTF-8编码
+This tool enables efficient processing of entire books and large documents, making it ideal for creating comprehensive local knowledge bases that AI systems can effectively utilize. The intelligent splitting mechanism ensures that content remains contextually coherent while being optimized for AI processing limitations.
